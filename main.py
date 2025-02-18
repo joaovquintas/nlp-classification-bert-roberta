@@ -7,16 +7,7 @@ from training.train import train_model
 from models.utils import load_data
 
 def get_model(model_type='bert', num_classes=10):
-    """
-    Retorna o modelo de classificação baseado no tipo de modelo escolhido.
 
-    Args:
-        model_type (str): 'bert' ou 'roberta'
-        num_classes (int): Número de classes no dataset
-
-    Returns:
-        Modelo instanciado (BertClassifier ou RobertaClassifier)
-    """
     if model_type == 'bert':
         model = BertClassifier(num_classes=num_classes)
     elif model_type == 'roberta':

@@ -7,10 +7,8 @@ def accuracy(preds, labels):
     return correct.sum() / len(correct)
 
 def evaluate_metrics(preds, labels):
-    """
-    Função para calcular as métricas de avaliação (Acurácia, F1, Precisão, Recall).
-    """
-    preds = preds.cpu().numpy()  # As predições já são classes, não são logits
+
+    preds = preds.cpu().numpy() 
     labels = labels.cpu().numpy()
 
     accuracy_value = accuracy_score(labels, preds)

@@ -1,7 +1,7 @@
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from training.metrics import evaluate_metrics  # Usando a função para calcular métricas
+from training.metrics import evaluate_metrics 
 import numpy as np
 
 def train_model(model, train_loader, val_loader, loss_func, optimizer, num_epochs=4):
@@ -36,8 +36,8 @@ def train_model(model, train_loader, val_loader, loss_func, optimizer, num_epoch
         
         # Avaliação nas métricas de validação
         model.eval()
-        all_preds = []  # Para armazenar todas as predições
-        all_labels = []  # Para armazenar todas as labels reais
+        all_preds = []  
+        all_labels = []  
 
         with torch.no_grad():
             for batch in val_loader:
@@ -50,10 +50,9 @@ def train_model(model, train_loader, val_loader, loss_func, optimizer, num_epoch
                 all_preds.append(pred_classes.cpu().numpy())  # Armazenar predições
                 all_labels.append(labels.cpu().numpy())       # Armazenar os rótulos reais
 
-        # Concatenar todas as predições e labels para calcular as métricas
+
         all_preds = np.concatenate(all_preds)
         all_labels = np.concatenate(all_labels)
 
-        # Calcular as métricas de validação
         val_metrics = evaluate_metrics(torch.tensor(all_preds), torch.tensor(all_labels))
         print(f'Métricas de Validação: {val_metrics}')
