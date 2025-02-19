@@ -1,12 +1,11 @@
 import pandas as pd
 import torch
-from transformers import BertTokenizer, RobertaTokenizer
+from transformers import BertTokenizer, RobertaTokenizer, DebertaTokenizerFast
 from torch.utils.data import DataLoader, TensorDataset, random_split
+import matplotlib.pyplot as plt
 
 def tokenize_texts(texts, model_type='bert', max_length=128):
-    """
-    Tokeniza os textos usando BERT ou RoBERTa.
-    """
+    
     if model_type == 'bert':
         tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     elif model_type == 'roberta':
@@ -35,23 +34,57 @@ def load_data(file_path="data/ecommerceDataset.csv", val_split=0.2, batch_size=1
 
     df = df.dropna(subset=['Classification', 'Text', "Class_num"])
 
-    # Tokeniza os textos com o modelo correto
     tokenized = tokenize_texts(df['Text'].tolist(), model_type=model_type)
 
     input_ids = tokenized["input_ids"]
     attention_mask = tokenized["attention_mask"]
     labels = torch.tensor(df["Class_num"].values)
 
-    # Cria dataset
     dataset = TensorDataset(input_ids, attention_mask, labels)
 
-    # Divide em treino e validação
     train_size = int((1 - val_split) * len(dataset))
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
-    # Converte para DataLoader
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
     return train_loader, val_loader, len(categories)
+
+
+def plot_loss(csv_path="outputs/training_metrics.csv"):
+    df = pd.read_csv(csv_path)
+    plt.figure(figsize=(8, 5))
+    plt.plot(df["epoch"], df["train_loss"], label="Treinamento", marker="o", linestyle="-")
+    plt.plot(df["epoch"], df["val_loss"], label="Validação", marker="s", linestyle="--")
+    plt.title("Evolução da Loss")
+    plt.xlabel("Épocas")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+def plot_accuracy(csv_path="outputs/training_metrics.csv"):
+    df = pd.read_csv(csv_path)
+    plt.figure(figsize=(8, 5))
+    plt.plot(df["epoch"], df["train_accuracy"], label="Treinamento", marker="o", linestyle="-")
+    plt.plot(df["epoch"], df["val_accuracy"], label="Validação", marker="s", linestyle="--")
+    plt.title("Evolução da Acurácia")
+    plt.xlabel("Épocas")
+    plt.ylabel("Acurácia")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+def plot_f1_metrics(csv_path="outputs/training_metrics.csv"):
+    df = pd.read_csv(csv_path)
+    plt.figure(figsize=(8, 5))
+    plt.plot(df["epoch"], df["precision"], label="Precisão", marker="o", linestyle="-")
+    plt.plot(df["epoch"], df["recall"], label="Recall", marker="s", linestyle="--")
+    plt.plot(df["epoch"], df["f1_score"], label="F1-Score", marker="D", linestyle="-.")
+    plt.title("Métricas de Classificação")
+    plt.xlabel("Épocas")
+    plt.ylabel("Valor")
+    plt.legend()
+    plt.grid()
+    plt.show()
