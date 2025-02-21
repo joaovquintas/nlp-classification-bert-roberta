@@ -1,12 +1,14 @@
 import torch
 import pandas as pd
-from training.metrics import evaluate_metrics 
+from training.metrics import evaluate_metrics
+import torch.nn.functional
 
-def train_model(model, train_loader, val_loader, loss_func, optimizer, num_epochs=4, output_file="outputs/training_metrics.csv"):
+def train_model(model, train_loader, val_loader, loss_func, optimizer, num_epochs=4, output_file="outputs/training_metrics.csv", dropout_rate=0.3):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
     metrics_history = []
+    dropout = torch.nn.Dropout(dropout_rate)  # Define o dropout
 
     for epoch in range(num_epochs):
         model.train()
@@ -20,6 +22,8 @@ def train_model(model, train_loader, val_loader, loss_func, optimizer, num_epoch
 
             optimizer.zero_grad()
             outputs = model(input_ids, attention_mask)
+
+            outputs = dropout(outputs)  # Aplica dropout
             loss = loss_func(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -28,7 +32,7 @@ def train_model(model, train_loader, val_loader, loss_func, optimizer, num_epoch
             total_correct += (outputs.argmax(1) == labels).sum().item()
             total_samples += labels.size(0)
 
-            if batch_idx % 10 == 0:  # Mostra progresso a cada 10 batches
+            if batch_idx % 10 == 0:
                 print(f"Batch {batch_idx}/{len(train_loader)} - Perda: {loss.item():.4f}")
 
         avg_loss = total_loss / total_samples

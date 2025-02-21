@@ -1,6 +1,6 @@
 import pandas as pd
 import torch
-from transformers import BertTokenizer, RobertaTokenizer, DebertaTokenizerFast
+from transformers import BertTokenizer, RobertaTokenizer
 from torch.utils.data import DataLoader, TensorDataset, random_split
 import matplotlib.pyplot as plt
 

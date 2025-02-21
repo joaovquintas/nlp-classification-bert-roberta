@@ -19,34 +19,34 @@ def get_model(model_type='bert', num_classes=4):
     return model
  
 def main():
-    print("🚀 Iniciando script...")
+    print("Iniciando script.")
 
-    model_type = 'bert'
-    print(f"🔍 Modelo escolhido: {model_type}")
+    model_type = 'roberta'
+    print(f"Modelo escolhido: {model_type}")
 
     print("📂 Carregando dataset...")
-    train_loader, val_loader, num_classes = load_data("data/ecommerceDataset.csv", model_type=model_type, fraction=0.01)
-    print(f"✅ Dataset carregado com {num_classes} classes!")
+    train_loader, val_loader, num_classes = load_data("data/ecommerceDataset.csv", model_type=model_type, fraction=0.4, val_split=0.05)
+    print(f"Dataset carregado com {num_classes} classes.")
 
     print("🛠️ Criando modelo...")
     model = get_model(model_type=model_type, num_classes=num_classes)
-    print("✅ Modelo instanciado!")
+    print("Modelo instanciado.")
 
     loss_func = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=2e-5) #2e-5
+    optimizer = optim.Adam(model.parameters(), lr=1e-5) #2e-5
 
-    num_epochs = 10
+    num_epochs = 3
 
-    print("🎯 Iniciando treinamento...")
+    print("Iniciando treinamento.")
     train_model(model, train_loader, val_loader, loss_func, optimizer, num_epochs=num_epochs)
-    print("🏁 Treinamento finalizado!")
+    print("Treinamento finalizado.")
     
 
-    print("📊 Gerando gráficos...")
+    print("Gerando gráficos.")
     plot_loss()
     plot_accuracy()
     plot_f1_metrics()
-    print("✅ Gráficos gerados com sucesso!")
+    print("Gráficos gerados com sucesso.")
 
 if __name__ == "__main__":
     main()
